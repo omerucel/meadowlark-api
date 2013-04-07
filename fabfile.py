@@ -9,5 +9,8 @@ def test_cover(integration=1):
 def test():
     local('python manage.py test -v 2 --settings=meadowlark.test_settings')
 
+def test_travis():
+	local('python manage.py test -v 2 --settings=meadowlark.travis_settings')
+
 def runserver():
 	local('python manage.py runserver --settings=meadowlark.development_settings')

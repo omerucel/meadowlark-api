@@ -105,14 +105,14 @@ class FoldersResource(ApiView):
 # /folders/:folder_id
 class FolderResource(ApiView):
     @access_token_required
-    @load_model(model=models.Folder, id_name = 'folder_id')
+    @load_model(model=models.Folder, id_name = 'folder_id', access_name='folder')
     def get(self, request, folder_id):
         return ApiResponse(request.folder.get_public_dict())
 
 # /folders/:folder_id/files
 class FolderFilesResource(ApiView):
     @access_token_required
-    @load_model(model=models.Folder, id_name='folder_id')
+    @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
     def get(self, request, folder_id):
 
         file_list = []
@@ -127,7 +127,7 @@ class FolderFilesResource(ApiView):
         }, 200)
 
     @access_token_required
-    @load_model(model=models.Folder, id_name='folder_id')
+    @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
     def post(self, request, folder_id):
         form = forms.FolderFilesPostForm(request.POST, request.FILES)
         if form.is_valid() == False:
@@ -142,8 +142,10 @@ class FolderFilesResource(ApiView):
 
 # /files/:file_id
 class FileResource(ApiView):
+    @access_token_required
+    @load_model(model=models.File, id_name='file_id', access_name='file')
     def get(self, request, file_id):
-        return ApiResponse(status=200)
+        return ApiResponse(request.file.get_public_dict(), status=200)
 
 # /commands/ls
 class CommandLsResource(ApiView):

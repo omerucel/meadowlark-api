@@ -21,12 +21,12 @@ def access_token_required(fn):
 
     return wrapped
 
-def load_model(model, id_name):
+def load_model(model, id_name, access_name):
     def decorator(fn):
         def wrapped(self, request, *args, **kwargs):
             if kwargs.has_key(id_name):
                 try:
-                    request.folder = model.objects.get(id=kwargs[id_name])
+                    setattr(request, access_name, model.objects.get(id=kwargs[id_name]))
                 except ObjectDoesNotExist:
                     return ApiResponse({}, status=404)
 

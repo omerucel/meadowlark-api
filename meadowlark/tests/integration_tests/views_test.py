@@ -137,8 +137,18 @@ class FolderFilesResourceTest(TestCase):
         self.assertTrue(data.has_key('files'))
         self.assertTrue(data['files'].__len__() == 0)
 
-        file1 = factories.FileFactory(folder=folder)
-        file2 = factories.FileFactory(folder=folder)
+        response = self.client.post('/api/v1/folders/%d/files' %folder.id , {
+            'access_token': access_token.token,
+            'file': open('meadowlark/tests/sample_file.txt', 'rb')
+        })
+        data = simplejson.loads(response.content)
+
+        response = self.client.post('/api/v1/folders/%d/files' %folder.id , {
+            'access_token': access_token.token,
+            'file': open('meadowlark/tests/sample_file.txt', 'rb')
+        })
+        data = simplejson.loads(response.content)
+
         response = self.client.get('/api/v1/folders/%d/files' %folder.id , {
             'access_token': access_token.token
         })
@@ -169,3 +179,36 @@ class FolderFilesResourceTest(TestCase):
         data = simplejson.loads(response.content)
         self.assertEquals(201, response.status_code)
         self.assertTrue(data.has_key('id'))
+
+class FileResourceTest(TestCase):
+    def test_get(self):
+        response = self.client.get('/api/v1/files/1')
+        self.assertEquals(401, response.status_code)
+
+        access_token = factories.AccessTokenFactory()
+        response = self.client.get('/api/v1/files/1', {
+            'access_token': access_token.token
+        })
+        self.assertEquals(404, response.status_code)
+
+        folder = factories.FolderFactory(user=access_token.user)
+        response = self.client.post('/api/v1/folders/%d/files' %folder.id , {
+            'access_token': access_token.token,
+            'file': open('meadowlark/tests/sample_file.txt', 'rb')
+        })
+        data = simplejson.loads(response.content)
+        self.assertEquals(201, response.status_code)
+        self.assertTrue(data.has_key('id'))
+
+        file_id = data['id']
+
+        access_token = factories.AccessTokenFactory()
+        response = self.client.get('/api/v1/files/%d' %file_id, {
+            'access_token': access_token.token
+        })
+        data = simplejson.loads(response.content)
+        self.assertEquals(200, response.status_code)
+        self.assertTrue(data.has_key('name'))
+        self.assertTrue(data.has_key('id'))
+        self.assertTrue(data.has_key('size'))
+        self.assertTrue(data.has_key('extension'))

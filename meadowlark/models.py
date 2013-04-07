@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -18,12 +19,16 @@ class Folder(models.Model):
         }
 
 class File(models.Model):
-	folder = models.ForeignKey(Folder)
-	name = models.CharField(max_length=255, null=False)
-	file = models.FileField(upload_to='files')
+    folder = models.ForeignKey(Folder)
+    name = models.CharField(max_length=255, null=False)
+    file = models.FileField(upload_to='files')
 
-	def get_public_dict(self):
-		return {
-			'id': self.id,
-			'name': self.name
-		}
+    def get_public_dict(self):
+        name,extension = os.path.splitext(self.file.name)
+
+        return {
+            'id': self.id,
+            'name': self.file.name,
+            'size': self.file.size,
+            'extension': extension
+        }
