@@ -20,6 +20,7 @@ class Folder(models.Model):
 class File(models.Model):
 	folder = models.ForeignKey(Folder)
 	name = models.CharField(max_length=255, null=False)
+	file = models.FileField(upload_to='files')
 
 	def get_public_dict(self):
 		return {

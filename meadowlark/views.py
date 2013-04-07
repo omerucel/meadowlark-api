@@ -133,7 +133,7 @@ class FolderFilesResource(ApiView):
         if form.is_valid() == False:
             return utils.get_validation_error_response(form._errors)
 
-        file_item = models.File(folder=request.folder)
+        file_item = models.File(folder=request.folder, file=form.cleaned_data['file'])
         file_item.save()
 
         return ApiResponse({
