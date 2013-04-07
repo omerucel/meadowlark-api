@@ -1,6 +1,7 @@
 .codeintel
 *.pyc
 .coverage
-meadowlark/local_settings.py
+meadowlark/development_settings.py
+meadowlark/test_settings.py
 cover
 files

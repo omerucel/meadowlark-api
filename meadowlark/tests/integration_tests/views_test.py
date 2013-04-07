@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.utils import simplejson
-from django.core.files.storage import default_storage
 
 from meadowlark.tests import factories
 
@@ -170,4 +169,3 @@ class FolderFilesResourceTest(TestCase):
         data = simplejson.loads(response.content)
         self.assertEquals(201, response.status_code)
         self.assertTrue(data.has_key('id'))
-        self.assertTrue(default_storage.exists('files/sample_file.txt'))
