@@ -1,5 +1,9 @@
 
+import uuid
+import hashlib
 from basitapi.response import ApiResponse
+
+from meadowlark import models
 
 def get_unauthorized_error_response(data = None):
     if data == None:
@@ -23,3 +27,9 @@ def get_user_private_data(user):
         'email': user.email,
         'username': user.username
     }
+
+def create_access_token(user):
+    access_token = models.AccessToken(user=user)
+    access_token.token = hashlib.sha256('%s%s' %(uuid.uuid1(), user.email)).hexdigest()
+    access_token.save()
+    return access_token

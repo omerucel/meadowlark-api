@@ -12,7 +12,11 @@ class UsersResourceTest(TestCase):
         })
         data = simplejson.loads(response.content)
         self.assertEquals(201, response.status_code)
-        self.assertTrue(data.has_key('id'))
+        self.assertTrue(data.has_key('user'))
+        self.assertTrue(data['user'].has_key('id'))
+        self.assertTrue(data['user'].has_key('username'))
+        self.assertTrue(data['user'].has_key('email'))
+        self.assertTrue(data.has_key('token'))
 
         user_one = factories.UserFactory()
         response = self.client.post('/api/v1/users', {
@@ -44,11 +48,11 @@ class UsersSelfResourceTest(TestCase):
 
 class AccessTokensResourceTest(TestCase):
     def test_post(self):
-        user = factories.UserFactory(password = 'deneme123')
+        user = factories.UserFactory()
 
         response = self.client.post('/api/v1/access-tokens', {
             'username': user.username,
-            'password': 'deneme123'
+            'password': user.username
         })
         data = simplejson.loads(response.content)
         self.assertEquals(201, response.status_code)

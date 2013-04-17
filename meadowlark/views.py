@@ -31,8 +31,11 @@ class UsersResource(ApiView):
         user.is_staff = True
         user.save()
 
+        access_token = utils.create_access_token(user)
+
         return ApiResponse({
-            'id': user.id
+            'user': utils.get_user_private_data(user),
+            'token': access_token.token
         }, 201)
 
 # /users/self
@@ -70,14 +73,17 @@ class AccessTokensResource(ApiView):
         if user.check_password(password) == False:
             return utils.get_unauthorized_error_response()
 
-        access_token = models.AccessToken(user=user)
-        access_token.token = hashlib.sha256('%s%s' %(uuid.uuid1(), user.email)).hexdigest()
-        access_token.save()
+        access_token = utils.create_access_token(user)
 
         return ApiResponse({
             'user': utils.get_user_private_data(user),
             'token': access_token.token
         }, 201)
+
+    @access_token_required
+    def delete(self, request):
+        request.access_token.delete()
+        return ApiResponse({}, 200);
 
 # /access-tokens/self
 class AccessTokenSelfResource(ApiView):
