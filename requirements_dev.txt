@@ -1,5 +1,5 @@
 -r requirements.txt
-django-nose
-coverage
-fabric
-factory-boy
+django-nose==1.1
+coverage==3.6
+fabric==1.6.0
+factory-boy==1.3.0

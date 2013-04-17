@@ -23,8 +23,8 @@ class UsersResourceTest(TestCase):
         data = simplejson.loads(response.content)
         self.assertEquals(400, response.status_code)
         self.assertTrue(data.has_key('validation_errors'))
-        self.assertEquals('email already in use', data['validation_errors']['email'][0])
-        self.assertEquals('username already in use', data['validation_errors']['username'][0])
+        self.assertEquals('already-in-use', data['validation_errors']['email'][0])
+        self.assertEquals('already-in-use', data['validation_errors']['username'][0])
 
 class UsersSelfResourceTest(TestCase):
     def test_get(self):
