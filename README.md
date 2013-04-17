@@ -1,1 +1,1 @@
-[![Build Status](https://travis-ci.org/omerucel/meadowlark.png)](https://travis-ci.org/omerucel/meadowlark)
+[![Build Status](https://travis-ci.org/omerucel/meadowlark-api.png)](https://travis-ci.org/omerucel/meadowlark-api)
