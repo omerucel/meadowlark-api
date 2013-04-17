@@ -19,7 +19,7 @@ from meadowlark import utils
 # /users
 class UsersResource(ApiView):
     def post(self, request):
-        form = forms.UsersPostForm(request.POST)
+        form = forms.UsersPostForm(request.REQUEST)
         if form.is_valid() == False:
             return utils.get_validation_error_response(form._errors)
 
@@ -44,7 +44,7 @@ class UserSelfResource(ApiView):
 # /access-tokens
 class AccessTokensResource(ApiView):
     def post(self, request):
-        form = forms.AccessTokensPostForm(request.POST)
+        form = forms.AccessTokensPostForm(request.REQUEST)
         if form.is_valid() == False:
             return utils.get_validation_error_response(form._errors)
 
@@ -89,7 +89,7 @@ class AccessTokenSelfResource(ApiView):
 class FoldersResource(ApiView):
     @access_token_required
     def post(self, request):
-        form = forms.FoldersPostForm(request.POST)
+        form = forms.FoldersPostForm(request.REQUEST)
         if form.is_valid(request.user) == False:
             return utils.get_validation_error_response(form._errors)
 
@@ -129,7 +129,7 @@ class FolderFilesResource(ApiView):
     @access_token_required
     @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
     def post(self, request, folder_id):
-        form = forms.FolderFilesPostForm(request.POST, request.FILES)
+        form = forms.FolderFilesPostForm(request.REQUEST, request.FILES)
         if form.is_valid() == False:
             return utils.get_validation_error_response(form._errors)
 

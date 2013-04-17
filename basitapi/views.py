@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 
+import django
 from django.utils import simplejson
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_exempt
@@ -88,8 +89,16 @@ class ApiView(View):
         Gelen istek application/x-www-form-urlencoded ile gönderilmişse
         raw_post_data içindeki veriler objeye çevrilir ve request.REQUEST güncellenir.
         """
-        if request.META.get('CONTENT_TYPE') == 'application/x-www-form-urlencoded' and request.method in ['PUT']:
-            request.REQUEST.dicts = (request.POST, request.GET, simplejson.loads(request.raw_post_data))
+        if django.VERSION[0] >= 1 and django.VERSION[1] > 4:
+            request_body = request.body
+        else:
+            request_body = request.raw_post_data
+
+        if 'application/x-www-form-urlencoded' in request.META.get('CONTENT_TYPE', '') and request.method in ['PUT']:
+            request.REQUEST.dicts = (request.POST, request.GET, simplejson.loads(request_body))
+
+        if 'application/json' in request.META.get('CONTENT_TYPE', ''):
+            request.REQUEST.dicts = (request.POST, request.GET, simplejson.loads(request_body))
 
         try:
             # Yanıt formatını belirlemek için önce HTTP_ACCEPT kontrol ediliyor.
