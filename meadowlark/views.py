@@ -56,7 +56,7 @@ class AccessTokensResource(ApiView):
         if form.cleaned_data.has_key('username'):
             username = form.cleaned_data['username']
 
-        if not username == None:
+        if email == None:
             try:
                 user = User.objects.get(username=username)
             except ObjectDoesNotExist:
@@ -66,6 +66,9 @@ class AccessTokensResource(ApiView):
                 user = User.objects.get(email=email)
             except ObjectDoesNotExist:
                 return utils.get_unauthorized_error_response()
+
+        if user.check_password(password) == False:
+            return utils.get_unauthorized_error_response()
 
         access_token = models.AccessToken(user=user)
         access_token.token = hashlib.sha256('%s%s' %(uuid.uuid1(), user.email)).hexdigest()
