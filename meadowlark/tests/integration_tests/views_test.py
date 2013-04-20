@@ -286,19 +286,16 @@ class FileResourceTest(TestCase):
         self.assertEquals(404, response.status_code)
 
         # DELETE
-        response = self.client.delete('/api/v1/endpoints/1/folders/1/files/1', {
-            'access_token': access_token.token
-        })
+        response = self.client.delete('/api/v1/endpoints/1/folders/1/files/1?access_token=%s' 
+            %(access_token.token))
         self.assertEquals(404, response.status_code)
 
-        response = self.client.delete('/api/v1/endpoints/%d/folders/1/files/1' %(endpoint.id), {
-            'access_token': access_token.token
-        })
+        response = self.client.delete('/api/v1/endpoints/%d/folders/1/files/1?access_token=%s' 
+            %(endpoint.id, access_token.token))
         self.assertEquals(404, response.status_code)
 
-        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/1' %(endpoint.id, folder.id), {
-            'access_token': access_token.token
-        })
+        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/1?access_token=%s'
+            %(endpoint.id, folder.id, access_token.token))
         self.assertEquals(404, response.status_code)
 
     def test_403(self):
@@ -315,9 +312,8 @@ class FileResourceTest(TestCase):
         self.assertEquals(403, response.status_code)
 
         # DELETE
-        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/%d' %(endpoint2.id, folder.id, file1.id), {
-            'access_token': access_token.token,
-        })
+        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/%d?access_token=%s' 
+            %(endpoint2.id, folder.id, file1.id, access_token.token))
         self.assertEquals(403, response.status_code)
 
     def test_200_get(self):
@@ -338,7 +334,6 @@ class FileResourceTest(TestCase):
         self.assertTrue(data.has_key('extension'))
 
         # DELETE
-        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/%d' %(endpoint.id, folder.id, file1.id), {
-            'access_token': access_token.token
-        })
+        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/%d?access_token=%s' 
+            %(endpoint.id, folder.id, file1.id, access_token.token))
         self.assertEquals(200, response.status_code)

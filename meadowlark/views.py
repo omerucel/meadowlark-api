@@ -174,4 +174,16 @@ class FileResource(ApiView):
         if request.file.folder.endpoint.id != request.endpoint.id:
             return utils.get_forbidden_error_response()
 
-        return ApiResponse(request.file.get_public_dict(), status=200)
+        return ApiResponse(request.file.get_public_dict(), 200)
+
+    @access_token_required
+    @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
+    @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
+    @load_model(model=models.File, id_name='file_id', access_name='file')
+    def delete(self, request, endpoint_id, folder_id, file_id):
+        if request.file.folder.endpoint.id != request.endpoint.id:
+            return utils.get_forbidden_error_response()
+
+        request.file.delete()
+
+        return ApiResponse({}, 200)
