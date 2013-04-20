@@ -171,7 +171,7 @@ class FileResource(ApiView):
     @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
     @load_model(model=models.File, id_name='file_id', access_name='file')
     def get(self, request, endpoint_id, folder_id, file_id):
-        if request.folder.endpoint.id != request.endpoint.id:
+        if request.file.folder.endpoint.id != request.endpoint.id:
             return utils.get_forbidden_error_response()
 
         return ApiResponse(request.file.get_public_dict(), status=200)

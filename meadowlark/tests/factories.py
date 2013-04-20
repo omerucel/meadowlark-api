@@ -2,6 +2,7 @@ import factory
 import hashlib
 
 from django.contrib.auth.models import User
+from django.core.files import File
 from meadowlark import models
 
 class UserFactory(factory.Factory):
@@ -46,3 +47,4 @@ class FileFactory(factory.Factory):
 
     folder = factory.SubFactory(FolderFactory)
     name = factory.Sequence(lambda a: 'file%d' %(int(a) + 1))
+    file = factory.LazyAttribute(lambda a: File(open('meadowlark/tests/sample_file.txt', 'rb')))
