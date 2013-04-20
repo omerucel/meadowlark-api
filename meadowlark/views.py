@@ -124,6 +124,18 @@ class FolderResource(ApiView):
 
         return ApiResponse(request.folder.get_public_dict())
 
+    @access_token_required
+    @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
+    @load_model(model=models.Folder, id_name = 'folder_id', access_name='folder')
+    def delete(self, request, endpoint_id, folder_id):
+
+        if request.folder.endpoint.id != request.endpoint.id:
+            return utils.get_forbidden_error_response()
+
+        request.folder.remove()
+
+        return ApiResponse()
+
 # /endpoints/:endpoint_id/folders/:folder_id/files
 class FilesResource(ApiView):
     @access_token_required
