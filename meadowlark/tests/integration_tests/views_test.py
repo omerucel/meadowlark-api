@@ -80,10 +80,9 @@ class AccessTokenSelfResourceTest(TestCase):
 
 class FoldersResourceTest(TestCase):
     def test_404_post(self):
-        endpoint_id = 1
         access_token = factories.AccessTokenFactory()
 
-        response = self.client.post('/api/v1/folders/%s' %endpoint_id, {
+        response = self.client.post('/api/v1/endpoints/1/folders', {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
@@ -91,14 +90,14 @@ class FoldersResourceTest(TestCase):
     def test_401_post(self):
         endpoint = factories.EndpointFactory()
 
-        response = self.client.post('/api/v1/folders/%s' %endpoint.id)
+        response = self.client.post('/api/v1/endpoints/%d/folders' %(endpoint.id))
         self.assertEquals(401, response.status_code)
 
     def test_400_post(self):
         endpoint = factories.EndpointFactory()
         access_token = factories.AccessTokenFactory()
 
-        response = self.client.post('/api/v1/folders/%s' %endpoint.id, {
+        response = self.client.post('/api/v1/endpoints/%d/folders' %(endpoint.id), {
             'access_token': access_token.token
         })
         self.assertEquals(400, response.status_code)
@@ -107,7 +106,7 @@ class FoldersResourceTest(TestCase):
         endpoint = factories.EndpointFactory()
         access_token = factories.AccessTokenFactory()
 
-        response = self.client.post('/api/v1/folders/%s' %endpoint.id, {
+        response = self.client.post('/api/v1/endpoints/%d/folders' %(endpoint.id), {
             'access_token': access_token.token,
             'name': 'test'
         })
@@ -117,18 +116,18 @@ class FoldersResourceTest(TestCase):
 
 class FolderResourceTest(TestCase):
     def test_401_get(self):
-        response = self.client.get('/api/v1/folders/1/123')
+        response = self.client.get('/api/v1/endpoints/1/folders/123')
         self.assertEquals(401, response.status_code)
 
     def test_404_get(self):
         access_token = factories.AccessTokenFactory()
-        response = self.client.get('/api/v1/folders/1/123', {
+        response = self.client.get('/api/v1/endpoints/1/folders/123', {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
 
         endpoint = factories.EndpointFactory()
-        response = self.client.get('/api/v1/folders/%d/123' %(endpoint.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/123' %(endpoint.id), {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
@@ -139,7 +138,7 @@ class FolderResourceTest(TestCase):
         endpoint2 = factories.EndpointFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
 
-        response = self.client.get('/api/v1/folders/%d/%d' %(endpoint2.id, folder.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/%d' %(endpoint2.id, folder.id), {
             'access_token': access_token.token
         })
         self.assertEquals(403, response.status_code)
@@ -149,7 +148,7 @@ class FolderResourceTest(TestCase):
         endpoint = factories.EndpointFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
 
-        response = self.client.get('/api/v1/folders/%d/%d' %(endpoint.id, folder.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/%d' %(endpoint.id, folder.id), {
             'access_token': access_token.token
         })
         data = simplejson.loads(response.content)
@@ -157,21 +156,21 @@ class FolderResourceTest(TestCase):
         self.assertTrue(data.has_key('name'))
         self.assertEquals(folder.name, data['name'])
 
-class FolderFilesResourceTest(TestCase):
+class FilesResourceTest(TestCase):
     def test_401_get(self):
-        response = self.client.get('/api/v1/folders/1/123/files')
+        response = self.client.get('/api/v1/endpoints/1/folders/123/files')
         self.assertEquals(401, response.status_code)
 
     def test_404_get(self):
         access_token = factories.AccessTokenFactory()
 
-        response = self.client.get('/api/v1/folders/1/123/files', {
+        response = self.client.get('/api/v1/endpoints/1/folders/1/files', {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
 
         endpoint = factories.EndpointFactory()
-        response = self.client.get('/api/v1/folders/%d/123/files' %(endpoint.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/123/files' %(endpoint.id), {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
@@ -182,7 +181,7 @@ class FolderFilesResourceTest(TestCase):
         endpoint2 = factories.EndpointFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
 
-        response = self.client.get('/api/v1/folders/%d/%d/files' %(endpoint2.id, folder.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/%d/files' %(endpoint2.id, folder.id), {
             'access_token': access_token.token
         })
         self.assertEquals(403, response.status_code)
@@ -192,7 +191,7 @@ class FolderFilesResourceTest(TestCase):
         access_token = factories.AccessTokenFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
 
-        response = self.client.get('/api/v1/folders/%d/%d/files' %(endpoint.id, folder.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/%d/files' %(endpoint.id, folder.id), {
             'access_token': access_token.token
         })
         data = simplejson.loads(response.content)
@@ -200,16 +199,16 @@ class FolderFilesResourceTest(TestCase):
         self.assertTrue(data.has_key('files'))
         self.assertTrue(data['files'].__len__() == 0)
 
-        response = self.client.post('/api/v1/folders/%d/%d/files' %(endpoint.id, folder.id), {
+        response = self.client.post('/api/v1/endpoints/%d/folders/%d/files' %(endpoint.id, folder.id), {
             'access_token': access_token.token,
             'file': open('meadowlark/tests/sample_file.txt', 'rb')
         })
-        response = self.client.post('/api/v1/folders/%d/%d/files' %(endpoint.id, folder.id), {
+        response = self.client.post('/api/v1/endpoints/%d/folders/%d/files' %(endpoint.id, folder.id), {
             'access_token': access_token.token,
             'file': open('meadowlark/tests/sample_file.txt', 'rb')
         })
 
-        response = self.client.get('/api/v1/folders/%d/%d/files' %(endpoint.id, folder.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/%d/files' %(endpoint.id, folder.id), {
             'access_token': access_token.token
         })
         data = simplejson.loads(response.content)
@@ -221,18 +220,18 @@ class FolderFilesResourceTest(TestCase):
 
     def test_401_post(self):
         endpoint = factories.EndpointFactory()
-        response = self.client.post('/api/v1/folders/%d/123/files' %endpoint.id)
+        response = self.client.post('/api/v1/endpoints/%d/folders/123/files' %(endpoint.id))
         self.assertEquals(401, response.status_code)
 
     def test_404_post(self):
         access_token = factories.AccessTokenFactory()
-        response = self.client.post('/api/v1/folders/1/123/files', {
+        response = self.client.post('/api/v1/endpoints/1/folders/123/files', {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
 
         endpoint = factories.EndpointFactory()
-        response = self.client.post('/api/v1/folders/%d/123/files' %endpoint.id, {
+        response = self.client.post('/api/v1/endpoints/%d/folders/123/files' %(endpoint.id), {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
@@ -242,7 +241,7 @@ class FolderFilesResourceTest(TestCase):
         access_token = factories.AccessTokenFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
 
-        response = self.client.post('/api/v1/folders/%d/%d/files' %(endpoint.id, folder.id), {
+        response = self.client.post('/api/v1/endpoints/%d/folders/%d/files' %(endpoint.id, folder.id), {
             'access_token': access_token.token,
             'file': open('meadowlark/tests/sample_file.txt', 'rb')
         })
@@ -256,7 +255,7 @@ class FolderFilesResourceTest(TestCase):
         access_token = factories.AccessTokenFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
 
-        response = self.client.post('/api/v1/folders/%d/%d/files' %(endpoint2.id, folder.id), {
+        response = self.client.post('/api/v1/endpoints/%d/folders/%d/files' %(endpoint2.id, folder.id), {
             'access_token': access_token.token,
             'file': open('meadowlark/tests/sample_file.txt', 'rb')
         })
@@ -264,19 +263,24 @@ class FolderFilesResourceTest(TestCase):
 
 class FileResourceTest(TestCase):
     def test_401_get(self):
-        response = self.client.get('/api/v1/files/1/1')
+        response = self.client.get('/api/v1/endpoints/1/folders/1/files/1')
         self.assertEquals(401, response.status_code)
-
 
     def test_404_get(self):
         access_token = factories.AccessTokenFactory()
-        response = self.client.get('/api/v1/files/1/1', {
+        response = self.client.get('/api/v1/endpoints/1/folders/1/files/1', {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
 
         endpoint = factories.EndpointFactory()
-        response = self.client.get('/api/v1/files/%d/1' %(endpoint.id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/1/files/1' %(endpoint.id), {
+            'access_token': access_token.token
+        })
+        self.assertEquals(404, response.status_code)
+
+        folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
+        response = self.client.get('/api/v1/endpoints/%d/folders/%d/files/1' %(endpoint.id, folder.id), {
             'access_token': access_token.token
         })
         self.assertEquals(404, response.status_code)
@@ -287,7 +291,7 @@ class FileResourceTest(TestCase):
         endpoint2 = factories.EndpointFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
 
-        response = self.client.post('/api/v1/folders/%d/%d/files' %(endpoint2.id, folder.id), {
+        response = self.client.post('/api/v1/endpoints/%d/folders/%d/files' %(endpoint2.id, folder.id), {
             'access_token': access_token.token,
             'file': open('meadowlark/tests/sample_file.txt', 'rb')
         })
@@ -297,7 +301,7 @@ class FileResourceTest(TestCase):
         access_token = factories.AccessTokenFactory()
         endpoint = factories.EndpointFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
-        response = self.client.post('/api/v1/folders/%d/%d/files' %(endpoint.id, folder.id), {
+        response = self.client.post('/api/v1/endpoints/%d/folders/%d/files' %(endpoint.id, folder.id), {
             'access_token': access_token.token,
             'file': open('meadowlark/tests/sample_file.txt', 'rb')
         })
@@ -308,7 +312,7 @@ class FileResourceTest(TestCase):
         file_id = data['id']
 
         access_token = factories.AccessTokenFactory()
-        response = self.client.get('/api/v1/files/%d/%d' %(endpoint.id, file_id), {
+        response = self.client.get('/api/v1/endpoints/%d/folders/%d/files/%d' %(endpoint.id, folder.id, file_id), {
             'access_token': access_token.token
         })
         data = simplejson.loads(response.content)

@@ -94,7 +94,7 @@ class AccessTokenSelfResource(ApiView):
             'token': request.access_token.token
         }, 200)
 
-# /folders
+# /endpoints/:endpoint_id/folders
 class FoldersResource(ApiView):
     @access_token_required
     @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
@@ -112,7 +112,7 @@ class FoldersResource(ApiView):
             'id': folder.id
         }, 201)
 
-# /folders/:endpoint_id/:folder_id
+# /endpoints/:endpoint_id/folders/:folder_id
 class FolderResource(ApiView):
     @access_token_required
     @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
@@ -124,8 +124,8 @@ class FolderResource(ApiView):
 
         return ApiResponse(request.folder.get_public_dict())
 
-# /folders/:endpoint_id/:folder_id/files
-class FolderFilesResource(ApiView):
+# /endpoints/:endpoint_id/folders/:folder_id/files
+class FilesResource(ApiView):
     @access_token_required
     @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
     @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
@@ -164,13 +164,14 @@ class FolderFilesResource(ApiView):
             'id': file_item.id
         }, 201)
 
-# /files/:file_id
+# /endpoints/:endpoint_id/folders/:folder_id/files/:file_id
 class FileResource(ApiView):
     @access_token_required
     @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
+    @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
     @load_model(model=models.File, id_name='file_id', access_name='file')
-    def get(self, request, endpoint_id, file_id):
-        if request.file.folder.endpoint.id != request.endpoint.id:
+    def get(self, request, endpoint_id, folder_id, file_id):
+        if request.folder.endpoint.id != request.endpoint.id:
             return utils.get_forbidden_error_response()
 
         return ApiResponse(request.file.get_public_dict(), status=200)
