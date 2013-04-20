@@ -112,18 +112,27 @@ class FoldersResource(ApiView):
             'id': folder.id
         }, 201)
 
-# /folders/:folder_id
+# /folders/:endpoint_id/:folder_id
 class FolderResource(ApiView):
     @access_token_required
+    @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
     @load_model(model=models.Folder, id_name = 'folder_id', access_name='folder')
-    def get(self, request, folder_id):
+    def get(self, request, endpoint_id, folder_id):
+
+        if request.folder.endpoint.id != request.endpoint.id:
+            return utils.get_forbidden_error_response()
+
         return ApiResponse(request.folder.get_public_dict())
 
-# /folders/:folder_id/files
+# /folders/:endpoint_id/:folder_id/files
 class FolderFilesResource(ApiView):
     @access_token_required
+    @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
     @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
-    def get(self, request, folder_id):
+    def get(self, request, endpoint_id, folder_id):
+
+        if request.folder.endpoint.id != request.endpoint.id:
+            return utils.get_forbidden_error_response()
 
         file_list = []
         for file in models.File.objects.filter(folder__id = request.folder.id).order_by('name').all():
@@ -137,8 +146,13 @@ class FolderFilesResource(ApiView):
         }, 200)
 
     @access_token_required
+    @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
     @load_model(model=models.Folder, id_name='folder_id', access_name='folder')
-    def post(self, request, folder_id):
+    def post(self, request, endpoint_id, folder_id):
+
+        if request.folder.endpoint.id != request.endpoint.id:
+            return utils.get_forbidden_error_response()
+
         form = forms.FolderFilesPostForm(request.REQUEST, request.FILES)
         if form.is_valid() == False:
             return utils.get_validation_error_response(form._errors)
@@ -148,11 +162,15 @@ class FolderFilesResource(ApiView):
 
         return ApiResponse({
             'id': file_item.id
-        },status=201)
+        }, 201)
 
 # /files/:file_id
 class FileResource(ApiView):
     @access_token_required
+    @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
     @load_model(model=models.File, id_name='file_id', access_name='file')
-    def get(self, request, file_id):
+    def get(self, request, endpoint_id, file_id):
+        if request.file.folder.endpoint.id != request.endpoint.id:
+            return utils.get_forbidden_error_response()
+
         return ApiResponse(request.file.get_public_dict(), status=200)

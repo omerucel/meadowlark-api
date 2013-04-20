@@ -14,6 +14,15 @@ def get_unauthorized_error_response(data = None):
 
     return ApiResponse(data, status=401)
 
+def get_forbidden_error_response(data = None):
+    if data == None:
+        data = {
+            'message': 'Forbidden',
+            'status': 403
+        }
+
+    return ApiResponse(data, status=403)
+
 def get_validation_error_response(errors):
     return ApiResponse({
         'validation_errors': errors,
