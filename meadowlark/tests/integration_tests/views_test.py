@@ -256,11 +256,17 @@ class FilesResourceTest(TestCase):
         self.assertEquals(403, response.status_code)
 
 class FileResourceTest(TestCase):
-    def test_401_get(self):
+    def test_401(self):
+        # GET
         response = self.client.get('/api/v1/endpoints/1/folders/1/files/1')
         self.assertEquals(401, response.status_code)
 
-    def test_404_get(self):
+        # DELETE
+        response = self.client.delete('/api/v1/endpoints/1/folders/1/files/1')
+        self.assertEquals(401, response.status_code)
+
+    def test_404(self):
+        # GET
         access_token = factories.AccessTokenFactory()
         response = self.client.get('/api/v1/endpoints/1/folders/1/files/1', {
             'access_token': access_token.token
@@ -279,14 +285,37 @@ class FileResourceTest(TestCase):
         })
         self.assertEquals(404, response.status_code)
 
-    def test_403_get(self):
+        # DELETE
+        response = self.client.delete('/api/v1/endpoints/1/folders/1/files/1', {
+            'access_token': access_token.token
+        })
+        self.assertEquals(404, response.status_code)
+
+        response = self.client.delete('/api/v1/endpoints/%d/folders/1/files/1' %(endpoint.id), {
+            'access_token': access_token.token
+        })
+        self.assertEquals(404, response.status_code)
+
+        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/1' %(endpoint.id, folder.id), {
+            'access_token': access_token.token
+        })
+        self.assertEquals(404, response.status_code)
+
+    def test_403(self):
         access_token = factories.AccessTokenFactory()
         endpoint = factories.EndpointFactory()
         endpoint2 = factories.EndpointFactory()
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
         file1 = factories.FileFactory(folder=folder)
 
+        # GET
         response = self.client.get('/api/v1/endpoints/%d/folders/%d/files/%d' %(endpoint2.id, folder.id, file1.id), {
+            'access_token': access_token.token,
+        })
+        self.assertEquals(403, response.status_code)
+
+        # DELETE
+        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/%d' %(endpoint2.id, folder.id, file1.id), {
             'access_token': access_token.token,
         })
         self.assertEquals(403, response.status_code)
@@ -297,7 +326,7 @@ class FileResourceTest(TestCase):
         folder = factories.FolderFactory(endpoint=endpoint, user=access_token.user)
         file1 = factories.FileFactory(folder=folder)
 
-        access_token = factories.AccessTokenFactory()
+        # GET
         response = self.client.get('/api/v1/endpoints/%d/folders/%d/files/%d' %(endpoint.id, folder.id, file1.id), {
             'access_token': access_token.token
         })
@@ -307,3 +336,9 @@ class FileResourceTest(TestCase):
         self.assertTrue(data.has_key('id'))
         self.assertTrue(data.has_key('size'))
         self.assertTrue(data.has_key('extension'))
+
+        # DELETE
+        response = self.client.delete('/api/v1/endpoints/%d/folders/%d/files/%d' %(endpoint.id, folder.id, file1.id), {
+            'access_token': access_token.token
+        })
+        self.assertEquals(200, response.status_code)
