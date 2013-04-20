@@ -5,11 +5,11 @@ from django.contrib.auth.models import User
 from meadowlark import models
 
 class UserFactory(factory.Factory):
-    FACTORY_FOR = models.User
+    FACTORY_FOR = User
 
     id = factory.Sequence(lambda a: int(a)+1)
     username = factory.Sequence(lambda a: 'username%d' %(int(a)+1))
-    password = factory.Sequence(lambda a: 'username%d' %(int(a)+1))
+    password = factory.Sequence(lambda a: 'password%d' %(int(a)+1))
     email = factory.Sequence(lambda a: 'username%d@test.com' %(int(a)+1))
 
     @classmethod

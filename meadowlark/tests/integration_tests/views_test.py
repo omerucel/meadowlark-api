@@ -52,7 +52,7 @@ class AccessTokensResourceTest(TestCase):
 
         response = self.client.post('/api/v1/access-tokens', {
             'username': user.username,
-            'password': user.username
+            'password': user.username.replace('username', 'password')
         })
         data = simplejson.loads(response.content)
         self.assertEquals(201, response.status_code)

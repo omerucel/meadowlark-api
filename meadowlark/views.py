@@ -59,7 +59,7 @@ class AccessTokensResource(ApiView):
         if form.cleaned_data.has_key('username'):
             username = form.cleaned_data['username']
 
-        if email == None:
+        if email == None or email.__len__() == 0:
             try:
                 user = User.objects.get(username=username)
             except ObjectDoesNotExist:
