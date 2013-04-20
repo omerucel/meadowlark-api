@@ -30,6 +30,11 @@ class AccessTokenFactory(factory.Factory):
     user = factory.SubFactory(UserFactory)
     token = factory.Sequence(lambda a: hashlib.sha256('username%d' %(int(a) + 1)).hexdigest())
 
+class EndpointFactory(factory.Factory):
+    FACTORY_FOR = models.Endpoint
+
+    name = factory.Sequence(lambda a: 'endpoint%d' %(int(a) + 1))
+
 class FolderFactory(factory.Factory):
     FACTORY_FOR = models.Folder
 

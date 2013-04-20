@@ -77,19 +77,38 @@ class AccessTokenSelfResourceTest(TestCase):
         self.assertTrue(data['token'].__len__() == 64)
 
 class FoldersResourceTest(TestCase):
-    def test_post(self):
-        response = self.client.post('/api/v1/folders')
+    def test_404_post(self):
+        endpoint_id = 1
+        access_token = factories.AccessTokenFactory()
+
+        response = self.client.post('/api/v1/folders/%s' %endpoint_id, {
+            'access_token': access_token.token
+        })
+        data = simplejson.loads(response.content)
+        self.assertEquals(404, response.status_code)
+
+    def test_401_post(self):
+        endpoint = factories.EndpointFactory()
+
+        response = self.client.post('/api/v1/folders/%s' %endpoint.id)
         data = simplejson.loads(response.content)
         self.assertEquals(401, response.status_code)
 
+    def test_400_post(self):
+        endpoint = factories.EndpointFactory()
         access_token = factories.AccessTokenFactory()
-        response = self.client.post('/api/v1/folders', {
+
+        response = self.client.post('/api/v1/folders/%s' %endpoint.id, {
             'access_token': access_token.token
         })
         data = simplejson.loads(response.content)
         self.assertEquals(400, response.status_code)
 
-        response = self.client.post('/api/v1/folders', {
+    def test_201_post(self):
+        endpoint = factories.EndpointFactory()
+        access_token = factories.AccessTokenFactory()
+
+        response = self.client.post('/api/v1/folders/%s' %endpoint.id, {
             'access_token': access_token.token,
             'name': 'test'
         })

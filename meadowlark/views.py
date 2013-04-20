@@ -97,14 +97,15 @@ class AccessTokenSelfResource(ApiView):
 # /folders
 class FoldersResource(ApiView):
     @access_token_required
-    def post(self, request):
+    @load_model(model=models.Endpoint, id_name='endpoint_id', access_name='endpoint')
+    def post(self, request, endpoint_id):
         form = forms.FoldersPostForm(request.REQUEST)
         if form.is_valid(request.user) == False:
             return utils.get_validation_error_response(form._errors)
 
         name = form.cleaned_data['name']
 
-        folder = models.Folder(user=request.user, name=name)
+        folder = models.Folder(user=request.user, endpoint=request.endpoint, name=name)
         folder.save()
 
         return ApiResponse({
@@ -155,8 +156,3 @@ class FileResource(ApiView):
     @load_model(model=models.File, id_name='file_id', access_name='file')
     def get(self, request, file_id):
         return ApiResponse(request.file.get_public_dict(), status=200)
-
-# /commands/ls
-class CommandLsResource(ApiView):
-    def post(self, request):
-        return ApiResponse(status=201)

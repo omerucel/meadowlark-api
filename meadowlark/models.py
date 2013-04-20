@@ -8,8 +8,12 @@ class AccessToken(models.Model):
     user = models.ForeignKey(User)
     token = models.CharField(max_length=64, null=False)
 
+class Endpoint(models.Model):
+    name = models.CharField(max_length=20, null=False, unique=True)
+
 class Folder(models.Model):
     user = models.ForeignKey(User)
+    endpoint = models.ForeignKey(Endpoint)
     name = models.CharField(max_length=20, null=False, unique=True)
 
     def get_public_dict(self):
