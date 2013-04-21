@@ -62,12 +62,17 @@ class AccessTokensResourceTest(TestCase):
         self.assertTrue(data['token'].__len__() == 64)
 
 class AccessTokenSelfResourceTest(TestCase):
-    def test_401_get(self):
+    def test_401(self):
+        # GET
         response = self.client.get('/api/v1/access-tokens/self')
-        data = simplejson.loads(response.content)
         self.assertEquals(401, response.status_code)
 
-    def test_200_get(self):
+        # DELETE
+        response = self.client.delete('/api/v1/access-tokens/self')
+        self.assertEquals(401, response.status_code)
+
+    def test_200(self):
+        # GET
         access_token = factories.AccessTokenFactory()
         response = self.client.get('/api/v1/access-tokens/self', {
             'access_token': access_token.token
@@ -77,6 +82,11 @@ class AccessTokenSelfResourceTest(TestCase):
         self.assertTrue(data.has_key('user'))
         self.assertTrue(data.has_key('token'))
         self.assertTrue(data['token'].__len__() == 64)
+
+        # DELETE
+        response = self.client.get('/api/v1/access-tokens/self?access_token=%s'
+            %(access_token.token))
+        self.assertEquals(200, response.status_code)
 
 class FoldersResourceTest(TestCase):
     def test_404_post(self):

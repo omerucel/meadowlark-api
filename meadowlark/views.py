@@ -80,11 +80,6 @@ class AccessTokensResource(ApiView):
             'token': access_token.token
         }, 201)
 
-    @access_token_required
-    def delete(self, request):
-        request.access_token.delete()
-        return ApiResponse({}, 200);
-
 # /access-tokens/self
 class AccessTokenSelfResource(ApiView):
     @access_token_required
@@ -93,6 +88,11 @@ class AccessTokenSelfResource(ApiView):
             'user': utils.get_user_private_data(request.user),
             'token': request.access_token.token
         }, 200)
+
+    @access_token_required
+    def delete(self, request):
+        request.access_token.delete()
+        return ApiResponse({}, 200);
 
 # /endpoints/:endpoint_id/folders
 class FoldersResource(ApiView):
