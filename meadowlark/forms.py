@@ -69,7 +69,7 @@ class FoldersPostForm(forms.Form):
 
         if valid:
             if models.Folder.objects.filter(user__id=current_user.id, name__exact=self.cleaned_data['name']).count() > 0:
-                self._errors['name'] = [u'name already in use']
+                self._errors['name'] = [u'already-in-use']
                 return False
 
         return valid
