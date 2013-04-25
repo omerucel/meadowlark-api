@@ -1,4 +1,4 @@
 Django==1.5.1
 django-storages==1.1.8
 boto==2.8.0
-basitapi==0.1.1
+basitapi==0.1.2

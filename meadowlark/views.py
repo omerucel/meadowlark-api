@@ -6,6 +6,7 @@ import hashlib
 from basitapi.exception import ApiException
 from basitapi.response import ApiResponse
 from basitapi.views import ApiView
+from basitapi.decorators import load_model
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
@@ -13,7 +14,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from meadowlark import models
 from meadowlark import forms
-from meadowlark.decorators import access_token_required, load_model
+from meadowlark.decorators import access_token_required
 from meadowlark import utils
 
 # /users

@@ -20,17 +20,3 @@ def access_token_required(fn):
         return fn(self, request, *args, **kwargs)
 
     return wrapped
-
-def load_model(model, id_name, access_name):
-    def decorator(fn):
-        def wrapped(self, request, *args, **kwargs):
-            if kwargs.has_key(id_name):
-                try:
-                    setattr(request, access_name, model.objects.get(id=kwargs[id_name]))
-                except ObjectDoesNotExist:
-                    return ApiResponse({}, status=404)
-
-            return fn(self, request, *args, **kwargs)
-
-        return wrapped
-    return decorator
